@@ -1,0 +1,191 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <style>
+        html,
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            font-size: 18px;
+            padding: 5px 5px;
+        }
+
+        .grid {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .grid .tg-row .tg-cell.color-gray {
+            color: gray;
+        }
+
+        .grid .tg-row .tg-cell.color-orange {
+            color: orange;
+        }
+
+        .grid .tg-row .tg-cell.color-red {
+            color: red;
+        }
+
+        .grid .tg-checkbox svg.tg-icon {
+            transform: scale(1);
+        }
+
+        .grid .tg-column-name {
+            font-size: 14px;
+        }
+
+        .grid .tg-turbogrid .tg-tree-header {
+            padding-top: 12px;
+        }
+
+        .about {
+            padding: 5px 5px;
+        }
+
+        .about,
+        .about a,
+        .about a:link,
+        .about a:visited {
+            color: #666;
+        }
+
+        .about a:hover {
+            color: #000;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="header">{title}</div>
+    <div class="grid"></div>
+    <div class="about">数据来源：<a href="https://ncov.dxy.cn/ncovh5/view/pneumonia" target="_blank">丁香园</a> ({timestamp})
+    </div>
+    <script>
+        /*inject:start*/
+        /*inject:end*/
+
+    </script>
+    <script>
+        var TurboGrid = window.turbogrid.TurboGrid;
+
+        var per = function(v, t = 1) {
+            let p = 0;
+            if (t) {
+                p = v / t;
+            }
+            return p;
+        };
+        var PF = function(v, t = 1, digits = 2, unit = "%") {
+            var p = per(v, t);
+            return (p * 100).toFixed(digits) + unit;
+        };
+
+
+        var grid;
+        window.onload = function() {
+            grid = new TurboGrid(".grid");
+            grid.setOption({
+                frozenColumn: 0,
+                collapseAll: true,
+                sortOnInit: true,
+                sortAsc: false,
+                rowNumberType: "list",
+                sortField: "currentConfirmedCount"
+            });
+
+            var rows = window.gridData.rows;
+            var totalConfirmed = 0;
+            rows.forEach(function(item) {
+                totalConfirmed += item.currentConfirmedCount;
+            });
+
+            rows.forEach(function(item) {
+                item.confirmedPercent = per(item.currentConfirmedCount, totalConfirmed);
+                item.deadPercent = per(item.deadCount, item.confirmedCount);
+                item.curedPercent = per(item.curedCount, item.confirmedCount);
+                if (item.subs) {
+                    item.subs.forEach(function(c) {
+                        c.confirmedPercent = per(c.currentConfirmedCount, item.currentConfirmedCount);
+                        c.deadPercent = per(c.deadCount, c.confirmedCount);
+                        c.curedPercent = per(c.curedCount, c.confirmedCount);
+                    });
+                }
+            });
+
+            var columns = [{
+                id: "name",
+                name: "地区",
+                width: 120
+            }, {
+                id: "confirmedCount",
+                name: "累计确诊",
+                dataType: "number"
+            }, {
+                id: "currentConfirmedCount",
+                name: "现存确诊",
+                dataType: "number"
+            }, {
+                id: "confirmedPercent",
+                name: "同级占比",
+                align: "right",
+                formatter: function(v, row) {
+                    return PF(v);
+                }
+            }, {
+                id: "deadCount",
+                name: "死亡",
+                dataType: "number"
+            }, {
+                id: "deadPercent",
+                name: "死亡率",
+                align: "right",
+                formatter: function(v, row) {
+                    return PF(v);
+                }
+            }, {
+                id: "curedCount",
+                name: "治愈",
+                dataType: "number"
+            }, {
+                id: "curedPercent",
+                name: "治愈率",
+                align: "right",
+                formatter: function(v, row) {
+                    return PF(v);
+                }
+            }];
+
+            grid.setData({
+                columns,
+                rows
+            });
+            grid.render();
+        };
+
+        window.onresize = function() {
+            if (grid) {
+                grid.resize();
+            }
+        };
+
+    </script>
+</body>
+
+</html>

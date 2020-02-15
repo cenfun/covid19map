@@ -1,0 +1,27 @@
+{
+  "name": "cov2map",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cenfun/cov2map.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cenfun/cov2map/issues"
+  },
+  "homepage": "https://github.com/cenfun/cov2map#readme",
+  "dependencies": {
+    "console-grid": "^1.0.16",
+    "json5": "^2.1.1",
+    "multi-process-worker": "^2.0.2",
+    "puppeteer-chromium-resolver": "^3.0.1",
+    "shelljs": "^0.8.3",
+    "turbogrid": "^1.1.2"
+  }
+}
