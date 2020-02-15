@@ -30,7 +30,7 @@ const generateReport = async (data) => {
         });
     }
 
-    const htmlPath = path.resolve(__dirname, "cov2map/index.html");
+    const htmlPath = path.resolve(__dirname, "cov2map.html");
     Util.writeFileContentSync(htmlPath, html, true);
 
     Util.logCyan("generated report: " + Util.relativePath(htmlPath));
