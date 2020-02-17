@@ -37,7 +37,7 @@ const generateReport = async (data) => {
 
 };
 
-const generateList = async (listPath) => {
+const generateInfo = async (infoPath) => {
     const page = await Util.createPage({
         //debug: true
     });
@@ -48,17 +48,28 @@ const generateList = async (listPath) => {
 
     await Util.delay(1000);
 
-    const list = await page.evaluate(() => {
-        return window.getAreaStat;
+    const info = await page.evaluate(() => {
+        if (!Array.isArray(window.getListByCountryTypeService2)) {
+            return;
+        }
+        if (!Array.isArray(window.getAreaStat)) {
+            return;
+        }
+
+        return {
+            totalList: window.getListByCountryTypeService2,
+            chinaList: window.getAreaStat
+        };
     });
 
     await Util.closeBrowser();
 
-    if (Util.isList(list)) {
-        Util.writeJSONSync(listPath, list, true);
-        return list;
+    if (info) {
+        Util.writeJSONSync(infoPath, info, true);
+        return info;
     }
-    console.log("ERROR: Fail to load list");
+
+    console.log("ERROR: Fail to load info");
 
 };
 
@@ -66,18 +77,18 @@ const main = async () => {
 
     const tempPath = Util.getTempRoot();
 
-    const listPath = tempPath + "/cov2-list.json";
-    let list = Util.readJSONSync(listPath);
-    if (!list) {
-        list = await generateList(listPath);
+    const infoPath = tempPath + "/cov2-info.json";
+    let info = Util.readJSONSync(infoPath);
+    if (!info) {
+        info = await generateInfo(infoPath);
     }
 
-    if (!list) {
+    if (!info) {
         return;
     }
 
     //parse data
-    list = list.map(p => {
+    const chinaList = info.chinaList.map(p => {
         p.name = p.provinceShortName;
         delete p.provinceName;
         delete p.provinceShortName;
@@ -96,8 +107,41 @@ const main = async () => {
         return p;
     });
 
+    const china = {
+        name: "中国",
+        currentConfirmedCount: 0,
+        confirmedCount: 0,
+        suspectedCount: 0,
+        curedCount: 0,
+        deadCount: 0,
+        subs: chinaList
+    };
+
+    chinaList.forEach(c => {
+        china.currentConfirmedCount += c.currentConfirmedCount;
+        china.confirmedCount += c.confirmedCount;
+        china.suspectedCount += c.suspectedCount;
+        china.curedCount += c.curedCount;
+        china.deadCount += c.deadCount;
+    });
+
+
+    const totalList = [china];
+    info.totalList.forEach(item => {
+        const c = {
+            name: item.provinceName,
+            currentConfirmedCount: item.currentConfirmedCount,
+            confirmedCount: item.confirmedCount,
+            suspectedCount: item.suspectedCount,
+            curedCount: item.curedCount,
+            deadCount: item.deadCount,
+        };
+        totalList.push(c);
+    });
+
+
     const data = {
-        rows: list
+        rows: totalList
     };
 
     Util.writeJSONSync(tempPath + "/grid-data.json", data, true);

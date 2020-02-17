@@ -97,6 +97,17 @@
             return (p * 100).toFixed(digits) + unit;
         };
 
+        var percentHandler = function(item) {
+            if (item.subs) {
+                item.subs.forEach(function(c) {
+                    c.confirmedPercent = per(c.currentConfirmedCount, item.currentConfirmedCount);
+                    c.deadPercent = per(c.deadCount, c.confirmedCount);
+                    c.curedPercent = per(c.curedCount, c.confirmedCount);
+                    percentHandler(c);
+                });
+            }
+        };
+
 
         var grid;
         window.onload = function() {
@@ -106,6 +117,7 @@
                 collapseAll: true,
                 sortOnInit: true,
                 sortAsc: false,
+                showRowNumber: false,
                 rowNumberType: "list",
                 sortField: "currentConfirmedCount"
             });
@@ -120,13 +132,7 @@
                 item.confirmedPercent = per(item.currentConfirmedCount, totalConfirmed);
                 item.deadPercent = per(item.deadCount, item.confirmedCount);
                 item.curedPercent = per(item.curedCount, item.confirmedCount);
-                if (item.subs) {
-                    item.subs.forEach(function(c) {
-                        c.confirmedPercent = per(c.currentConfirmedCount, item.currentConfirmedCount);
-                        c.deadPercent = per(c.deadCount, c.confirmedCount);
-                        c.curedPercent = per(c.curedCount, c.confirmedCount);
-                    });
-                }
+                percentHandler(item);
             });
 
             var columns = [{
@@ -134,12 +140,12 @@
                 name: "地区",
                 width: 120
             }, {
-                id: "confirmedCount",
-                name: "累计确诊",
-                dataType: "number"
-            }, {
                 id: "currentConfirmedCount",
                 name: "现存确诊",
+                dataType: "number"
+            }, {
+                id: "confirmedCount",
+                name: "累计确诊",
                 dataType: "number"
             }, {
                 id: "confirmedPercent",
