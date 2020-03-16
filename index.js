@@ -49,18 +49,22 @@ const generateInfo = async (infoPath) => {
     await Util.delay(1000);
 
     const info = await page.evaluate(() => {
-        if (!Array.isArray(window.getListByCountryTypeService2)) {
-            return;
-        }
-        if (!Array.isArray(window.getAreaStat)) {
-            return;
-        }
-
-        return {
-            totalList: window.getListByCountryTypeService2,
-            chinaList: window.getAreaStat
+        var items = {
+            "getListByCountryTypeService2true": "totalList",
+            "getAreaStat": "chinaList"
         };
+        var data = {};
+        for (let k in items) {
+            if (!Array.isArray(window[k])) {
+                console.log("Not found: window." + k);
+                return;
+            }
+            data[items[k]] = window[k];
+        }
+        return data;
     });
+
+    //console.log(info);
 
     await Util.closeBrowser();
 
@@ -78,10 +82,10 @@ const main = async () => {
     const tempPath = Util.getTempRoot();
 
     const infoPath = tempPath + "/cov2-info.json";
-    let info = Util.readJSONSync(infoPath);
-    if (!info) {
-        info = await generateInfo(infoPath);
-    }
+    //let info = Util.readJSONSync(infoPath);
+    //if (!info) {
+    let info = await generateInfo(infoPath);
+    //}
 
     if (!info) {
         return;
@@ -136,6 +140,9 @@ const main = async () => {
             curedCount: item.curedCount,
             deadCount: item.deadCount,
         };
+        if (c.name === "中国") {
+            return;
+        }
         totalList.push(c);
     });
 
