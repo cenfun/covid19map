@@ -142,6 +142,11 @@ const int = function(str) {
 const percentHandler = function(item) {
     if (item.subs) {
         item.subs.forEach(function(c) {
+            c.conadd = int(c.conadd);
+            c.econNum = int(c.econNum);
+            c.deathNum = int(c.deathNum);
+            c.cureNum = int(c.cureNum);
+            c.value = int(c.value);
             c.econPercent = per(c.econNum, item.econNum);
             c.deathPercent = per(c.deathNum, c.value);
             c.curePercent = per(c.cureNum, c.value);
@@ -199,6 +204,7 @@ const getGridData = (info) => {
         total.value += int(item.value);
     });
 
+    //total.econPercent = "";
     total.deathPercent = per(total.deathNum, total.value);
     total.curePercent = per(total.cureNum, total.value);
 
@@ -213,6 +219,9 @@ const getGridData = (info) => {
     }, {
         id: "conadd",
         name: "新增",
+        cellClass: "tg-cell-mask tg-bg-gray",
+        headerItemClass: "tg-bg-gray",
+        headerClass: "tg-bg-gray",
         dataType: "number"
     }, {
         id: "econNum",
@@ -222,6 +231,9 @@ const getGridData = (info) => {
         id: "econPercent",
         name: "现存比",
         align: "right",
+        cellClass: "tg-border-right",
+        headerItemClass: "tg-border-right",
+        headerClass: "tg-border-right",
         dataType: "percent"
     }, {
         id: "deathNum",
@@ -231,6 +243,9 @@ const getGridData = (info) => {
         id: "deathPercent",
         name: "死亡率",
         align: "right",
+        cellClass: "tg-border-right",
+        headerItemClass: "tg-border-right",
+        headerClass: "tg-border-right",
         dataType: "percent"
     }, {
         id: "cureNum",
@@ -240,6 +255,9 @@ const getGridData = (info) => {
         id: "curePercent",
         name: "治愈率",
         align: "right",
+        cellClass: "tg-border-right",
+        headerItemClass: "tg-border-right",
+        headerClass: "tg-border-right",
         dataType: "percent"
     }, {
         id: "value",
@@ -256,7 +274,7 @@ const getGridData = (info) => {
             sortAsc: false,
             showRowNumber: false,
             rowNumberType: "list",
-            sortField: "econNum"
+            sortField: ["econNum", "value"]
         },
         columns: columns,
         rows: rows
