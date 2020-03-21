@@ -75,7 +75,7 @@
 <body>
     <div class="header">{title}</div>
     <div class="grid"></div>
-    <div class="about">数据来源：<a href="https://ncov.dxy.cn/ncovh5/view/pneumonia" target="_blank">丁香园</a> ({timestamp})
+    <div class="about">From <a href="https://news.sina.cn/zt_d/yiqing0121" target="_blank">Sina</a> ({timestamp})
     </div>
     <script>
         /*inject:start*/
@@ -83,108 +83,38 @@
 
     </script>
     <script>
-        var TurboGrid = window.turbogrid.TurboGrid;
-
-        var per = function(v, t = 1) {
+        var PF = function(v, t = 1, digits = 2, unit = "%") {
             let p = 0;
             if (t) {
                 p = v / t;
             }
-            return p;
-        };
-        var PF = function(v, t = 1, digits = 2, unit = "%") {
-            var p = per(v, t);
             return (p * 100).toFixed(digits) + unit;
         };
 
-        var percentHandler = function(item) {
-            if (item.subs) {
-                item.subs.forEach(function(c) {
-                    c.confirmedPercent = per(c.currentConfirmedCount, item.currentConfirmedCount);
-                    c.deadPercent = per(c.deadCount, c.confirmedCount);
-                    c.curedPercent = per(c.curedCount, c.confirmedCount);
-                    percentHandler(c);
-                });
-            }
-        };
-
-
+        var TurboGrid = window.turbogrid.TurboGrid;
         var grid;
         window.onload = function() {
             grid = new TurboGrid(".grid");
+            grid.setFormatter("PF", function(v) {
+
+            });
             grid.setOption({
-                frozenColumn: 0,
-                collapseAll: true,
-                sortOnInit: true,
-                sortAsc: false,
-                showRowNumber: false,
-                rowNumberType: "list",
-                sortField: "currentConfirmedCount"
-            });
-
-            var rows = window.gridData.rows;
-            var totalConfirmed = 0;
-            rows.forEach(function(item) {
-                totalConfirmed += item.currentConfirmedCount;
-            });
-
-            rows.forEach(function(item) {
-                item.confirmedPercent = per(item.currentConfirmedCount, totalConfirmed);
-                item.deadPercent = per(item.deadCount, item.confirmedCount);
-                item.curedPercent = per(item.curedCount, item.confirmedCount);
-                percentHandler(item);
-            });
-
-            var columns = [{
-                id: "name",
-                name: "地区",
-                width: 120
-            }, {
-                id: "currentConfirmedCount",
-                name: "现存确诊",
-                dataType: "number"
-            }, {
-                id: "confirmedCount",
-                name: "累计确诊",
-                dataType: "number"
-            }, {
-                id: "confirmedPercent",
-                name: "同级占比",
-                align: "right",
-                formatter: function(v, row) {
-                    return PF(v);
+                numberFormat: function(v) {
+                    if (typeof(v) === "number") {
+                        return v.toLocaleString();
+                    }
+                    return v;
+                },
+                percentFormat: function(v) {
+                    if (typeof(v) === "number") {
+                        return PF(v);
+                    }
+                    return v;
                 }
-            }, {
-                id: "deadCount",
-                name: "死亡",
-                dataType: "number"
-            }, {
-                id: "deadPercent",
-                name: "死亡率",
-                align: "right",
-                formatter: function(v, row) {
-                    return PF(v);
-                }
-            }, {
-                id: "curedCount",
-                name: "治愈",
-                dataType: "number"
-            }, {
-                id: "curedPercent",
-                name: "治愈率",
-                align: "right",
-                formatter: function(v, row) {
-                    return PF(v);
-                }
-            }];
-
-            grid.setData({
-                columns,
-                rows
             });
+            grid.setData(window.gridData);
             grid.render();
         };
-
         window.onresize = function() {
             if (grid) {
                 grid.resize();

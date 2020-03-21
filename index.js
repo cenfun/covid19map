@@ -1,10 +1,8 @@
 //const fs = require("fs");
 const path = require("path");
+const axios = require("axios");
+
 const Util = require("./util.js");
-
-const sourceUrl = "https://ncov.dxy.cn/ncovh5/view/pneumonia";
-
-//https://gwpre.sina.cn/interface/fymap2020_data.json?_=1584782003619&callback=dataAPIData
 
 const generateReport = async (data) => {
     console.log("generate report ...");
@@ -38,125 +36,246 @@ const generateReport = async (data) => {
 
 };
 
-const generateInfo = async (infoPath) => {
-    const page = await Util.createPage({
-        //debug: true
-    });
-    Util.logMsg("goto page: " + sourceUrl);
-    await page.goto(sourceUrl, {
-        timeout: 60 * 1000
-    });
+// const generateInfo = async () => {
+//     const page = await Util.createPage({
+//         //debug: true
+//     });
 
-    await Util.delay(1000);
+//     const sourceUrl = "https://ncov.dxy.cn/ncovh5/view/pneumonia";
+//     Util.logMsg("goto page: " + sourceUrl);
+//     await page.goto(sourceUrl, {
+//         timeout: 60 * 1000
+//     });
 
-    const info = await page.evaluate(() => {
-        var items = {
-            "getListByCountryTypeService2true": "totalList",
-            "getAreaStat": "chinaList"
-        };
-        var data = {};
-        for (let k in items) {
-            if (!Array.isArray(window[k])) {
-                console.log("Not found: window." + k);
-                return;
-            }
-            data[items[k]] = window[k];
-        }
-        return data;
-    });
+//     await Util.delay(1000);
 
-    //console.log(info);
+//     const info = await page.evaluate(async () => {
 
-    await Util.closeBrowser();
+//         const addScriptTag = async () => {
+//             return new Promise((resolve) => {
+//                 window.dataAPIData = function(d) {
+//                     console.log("jsonp data callback");
+//                     resolve(d);
+//                 };
+//                 const rd = Math.random().toString().substr(2);
+//                 const url = "https://gwpre.sina.cn/interface/fymap2020_data.json?_=" + rd + "&callback=dataAPIData";
+//                 console.log("addScriptTag: " + url);
+//                 const script = document.createElement("script");
+//                 script.src = url;
+//                 script.onload = function() {
+//                     console.log("onload");
+//                 };
+//                 script.onerror = function(e) {
+//                     console.log("onerror", e);
+//                 };
+//                 document.body.appendChild(script);
+//             });
+//         };
 
-    if (info) {
-        Util.writeJSONSync(infoPath, info, true);
-        return info;
-    }
+//         var d = await addScriptTag();
+//         if (!d) {
+//             console.log("Not found: jsonp data");
+//             return;
+//         }
 
-    console.log("ERROR: Fail to load info");
+//         var items = {
+//             getListByCountryTypeService2true: "totalList",
+//             getAreaStat: "chinaList"
+//         };
+//         var data = {
+//             list: d.data.list,
+//             worldList: d.data.worldlist
+//         };
+//         for (let k in items) {
+//             if (!Array.isArray(window[k])) {
+//                 console.log("Not found: window." + k);
+//                 return;
+//             }
+//             data[items[k]] = window[k];
+//         }
+//         return data;
+//     });
 
+//     //console.log(info);
+
+//     await Util.closeBrowser();
+
+//     return info;
+// };
+
+//https://news.sina.cn/zt_d/yiqing0121
+
+const requestInfo = async () => {
+    const url = "https://gwpre.sina.cn/interface/fymap2020_data.json";
+    let d = await axios.get(url);
+    let data = d.data.data;
+    return {
+        chinaList: data.list,
+        worldList: data.worldlist
+    };
 };
 
-const main = async () => {
-
-    const tempPath = Util.getTempRoot();
-
-    const infoPath = tempPath + "/covid19-info.json";
-    //let info = Util.readJSONSync(infoPath);
-    //if (!info) {
-    let info = await generateInfo(infoPath);
-    //}
-
-    if (!info) {
-        return;
+const per = function(v, t = 1) {
+    let p = 0;
+    if (t) {
+        p = v / t;
     }
+    return p;
+};
 
-    //parse data
+const num = function(str) {
+    if (typeof(str) === "number" && !isNaN(str)) {
+        return str;
+    }
+    let n = parseFloat(str + "");
+    if (isNaN(n)) {
+        return 0;
+    }
+    return n;
+};
+
+const int = function(str) {
+    let n = num(str);
+    return Math.round(n);
+};
+
+const percentHandler = function(item) {
+    if (item.subs) {
+        item.subs.forEach(function(c) {
+            c.econPercent = per(c.econNum, item.econNum);
+            c.deathPercent = per(c.deathNum, c.value);
+            c.curePercent = per(c.cureNum, c.value);
+            percentHandler(c);
+        });
+    }
+};
+
+const getGridData = (info) => {
+
+    let china = {
+        conadd: 0,
+        collapsed: true
+    };
+
     const chinaList = info.chinaList.map(p => {
-        p.name = p.provinceShortName;
-        delete p.provinceName;
-        delete p.provinceShortName;
-        delete p.comment;
-        delete p.suspectedCount;
-        if (Array.isArray(p.cities)) {
-            p.subs = p.cities;
-            p.subs = p.subs.map(c => {
-                c.name = c.cityName;
-                delete c.cityName;
-                delete p.suspectedCount;
-                return c;
-            });
-            delete p.cities;
+        if (Array.isArray(p.city)) {
+            p.subs = p.city;
+            delete p.city;
         }
+        let conadd = parseInt(p.conadd);
+        if (!isNaN(conadd)) {
+            china.conadd += conadd;
+        }
+        p.collapsed = true;
         return p;
     });
 
-    const china = {
-        name: "中国",
-        currentConfirmedCount: 0,
-        confirmedCount: 0,
-        suspectedCount: 0,
-        curedCount: 0,
-        deadCount: 0,
-        subs: chinaList
-    };
-
-    chinaList.forEach(c => {
-        china.currentConfirmedCount += c.currentConfirmedCount;
-        china.confirmedCount += c.confirmedCount;
-        china.suspectedCount += c.suspectedCount;
-        china.curedCount += c.curedCount;
-        china.deadCount += c.deadCount;
-    });
-
-
-    const totalList = [china];
-    info.totalList.forEach(item => {
-        const c = {
-            name: item.provinceName,
-            currentConfirmedCount: item.currentConfirmedCount,
-            confirmedCount: item.confirmedCount,
-            suspectedCount: item.suspectedCount,
-            curedCount: item.curedCount,
-            deadCount: item.deadCount,
-        };
-        if (c.name === "中国") {
-            return;
+    const list = [];
+    info.worldList.forEach(item => {
+        if (item.name === "中国") {
+            item.subs = chinaList;
+            Object.assign(item, china);
         }
-        totalList.push(c);
+        if (!item.econNum) {
+            item.econNum = item.value - int(item.deathNum) - int(item.cureNum);
+        }
+        list.push(item);
     });
 
+    var total = {
+        name: "全球",
+        conadd: 0,
+        econNum: 0,
+        deathNum: 0,
+        cureNum: 0,
+        value: 0,
+        subs: list
+    };
+    list.forEach(function(item) {
+        total.conadd += int(item.conadd);
+        total.econNum += int(item.econNum);
+        total.deathNum += int(item.deathNum);
+        total.cureNum += int(item.cureNum);
+        total.value += int(item.value);
+    });
 
-    const data = {
-        rows: totalList
+    total.deathPercent = per(total.deathNum, total.value);
+    total.curePercent = per(total.cureNum, total.value);
+
+    percentHandler(total);
+
+    var rows = [total];
+
+    var columns = [{
+        id: "name",
+        name: "地区",
+        width: 120
+    }, {
+        id: "conadd",
+        name: "新增",
+        dataType: "number"
+    }, {
+        id: "econNum",
+        name: "现存",
+        dataType: "number"
+    }, {
+        id: "econPercent",
+        name: "现存比",
+        align: "right",
+        dataType: "percent"
+    }, {
+        id: "deathNum",
+        name: "死亡",
+        dataType: "number"
+    }, {
+        id: "deathPercent",
+        name: "死亡率",
+        align: "right",
+        dataType: "percent"
+    }, {
+        id: "cureNum",
+        name: "治愈",
+        dataType: "number"
+    }, {
+        id: "curePercent",
+        name: "治愈率",
+        align: "right",
+        dataType: "percent"
+    }, {
+        id: "value",
+        name: "累计",
+        dataType: "number"
+    }];
+
+    const gridData = {
+        option: {
+            frozenColumn: 0,
+            collapseAll: null,
+            sortOnInit: true,
+            convertDataType: true,
+            sortAsc: false,
+            showRowNumber: false,
+            rowNumberType: "list",
+            sortField: "econNum"
+        },
+        columns: columns,
+        rows: rows
     };
 
-    Util.writeJSONSync(tempPath + "/grid-data.json", data, true);
-
-    await generateReport(data);
-
+    return gridData;
 };
 
+const main = async () => {
+    let info = await requestInfo();
+    if (!info) {
+        console.log("ERROR: Fail to load info");
+        return;
+    }
+    const tempPath = Util.getTempRoot();
+    Util.writeJSONSync(tempPath + "/info.json", info, true);
+    const data = getGridData(info);
+    Util.writeJSONSync(tempPath + "/grid-data.json", data, true);
+    await generateReport(data);
+};
 
 main();
