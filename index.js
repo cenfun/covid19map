@@ -167,6 +167,11 @@ const getGridData = (info) => {
         if (Array.isArray(p.city)) {
             p.subs = p.city;
             delete p.city;
+            p.subs.forEach(c => {
+                if (!c.value) {
+                    c.value = c.conNum;
+                }
+            });
         }
         let conadd = parseInt(p.conadd);
         if (!isNaN(conadd)) {
