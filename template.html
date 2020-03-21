@@ -103,8 +103,12 @@
         var grid;
         window.onload = function() {
             grid = new TurboGrid(".grid");
-            grid.setFormatter("PF", function(v) {
-
+            grid.bind("onClick", function(e, d) {
+                this.unselectAll();
+                var rowData = this.getRowItem(d.row);
+                if (this.isRowSelectable(rowData)) {
+                    this.setSelectedRow(d.row, d.e);
+                }
             });
             grid.setOption({
                 numberFormat: function(v) {

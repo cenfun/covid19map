@@ -141,6 +141,7 @@ const int = function(str) {
 
 const percentHandler = function(item) {
     if (item.subs) {
+        item.selectable = true;
         item.subs.forEach(function(c) {
             c.conadd = int(c.conadd);
             c.econNum = int(c.econNum);
