@@ -4,6 +4,7 @@ const Util = require("./util.js");
 
 const sourceUrl = "https://ncov.dxy.cn/ncovh5/view/pneumonia";
 
+//https://gwpre.sina.cn/interface/fymap2020_data.json?_=1584782003619&callback=dataAPIData
 
 const generateReport = async (data) => {
     console.log("generate report ...");
@@ -11,7 +12,7 @@ const generateReport = async (data) => {
     const tempPath = path.resolve(__dirname, "template.html");
     const template = Util.readFileContentSync(tempPath);
     let html = Util.replace(template, {
-        title: "Cov2 Map " + new Date().toLocaleDateString(),
+        title: "COVID-19 Map " + new Date().toLocaleDateString(),
         timestamp: Util.getTimestamp()
     });
 
@@ -30,7 +31,7 @@ const generateReport = async (data) => {
         });
     }
 
-    const htmlPath = path.resolve(__dirname, "cov2map.html");
+    const htmlPath = path.resolve(__dirname, "./covid19map/index.html");
     Util.writeFileContentSync(htmlPath, html, true);
 
     Util.logCyan("generated report: " + Util.relativePath(htmlPath));
@@ -81,7 +82,7 @@ const main = async () => {
 
     const tempPath = Util.getTempRoot();
 
-    const infoPath = tempPath + "/cov2-info.json";
+    const infoPath = tempPath + "/covid19-info.json";
     //let info = Util.readJSONSync(infoPath);
     //if (!info) {
     let info = await generateInfo(infoPath);
