@@ -102,7 +102,8 @@ const getInfo = async () => {
                 worldList: data.worldlist
             });
         };
-        const url = "https://gwpre.sina.cn/interface/fymap2020_data.json?_=1584841195282&callback=dataAPIData";
+        let rd = Math.random().toString().substr(2);
+        const url = "https://gwpre.sina.cn/interface/fymap2020_data.json?_=" + rd + "&callback=dataAPIData";
         const script = document.createElement("script");
         script.src = url;
         script.onload = function() {
