@@ -3,6 +3,8 @@ const path = require("path");
 
 module.exports = {
 
+    preCommit: false,
+
     hooks: {
 
         "covid": {
