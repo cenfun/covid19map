@@ -1,0 +1,10 @@
+{
+    "name": "covid",
+    "version": "",
+    "main": "dist/covid.js",
+    "devDependencies": {
+        "@babel/polyfill": "^7.8.7",
+        "turbogrid": "^1.1.2"
+    },
+    "dependencies": {}
+}

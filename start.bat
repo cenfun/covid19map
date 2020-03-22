@@ -1,1 +1,1 @@
-node . && cmd
+npm start && cmd

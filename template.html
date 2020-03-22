@@ -3,135 +3,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
-    <style>
-        html,
-        body {
-            font-family: Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-            padding: 0;
-            margin: 0;
-        }
-
-        .header {
-            font-size: 18px;
-            padding: 5px 5px;
-        }
-
-        .grid {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        .grid .tg-row .tg-cell.color-gray {
-            color: gray;
-        }
-
-        .grid .tg-row .tg-cell.color-orange {
-            color: orange;
-        }
-
-        .grid .tg-row .tg-cell.color-red {
-            color: red;
-        }
-
-        .grid .tg-checkbox svg.tg-icon {
-            transform: scale(1);
-        }
-
-        .grid .tg-column-name {
-            font-size: 14px;
-        }
-
-        .grid .tg-turbogrid .tg-tree-header {
-            padding-top: 12px;
-        }
-
-        .grid .tg-turbogrid .tg-border-right {
-            border-right: 1px solid #ccc;
-        }
-
-        .grid .tg-turbogrid .tg-bg-gray {
-            background: #f5f5f5;
-        }
-
-        .about {
-            padding: 5px 5px;
-        }
-
-        .about,
-        .about a,
-        .about a:link,
-        .about a:visited {
-            color: #666;
-        }
-
-        .about a:hover {
-            color: #000;
-        }
-
-    </style>
+    <title>COVID-19 Map</title>
 </head>
 
 <body>
-    <div class="header">{title}</div>
-    <div class="grid"></div>
-    <div class="about">From <a href="https://news.sina.cn/zt_d/yiqing0121" target="_blank">Sina</a> ({timestamp})
-    </div>
     <script>
         /*inject:start*/
         /*inject:end*/
-
-    </script>
-    <script>
-        var PF = function(v, t = 1, digits = 2, unit = "%") {
-            let p = 0;
-            if (t) {
-                p = v / t;
-            }
-            return (p * 100).toFixed(digits) + unit;
-        };
-
-        var TurboGrid = window.turbogrid.TurboGrid;
-        var grid;
-        window.onload = function() {
-            grid = new TurboGrid(".grid");
-            grid.bind("onClick", function(e, d) {
-                this.unselectAll();
-                var rowData = this.getRowItem(d.row);
-                if (this.isRowSelectable(rowData)) {
-                    this.setSelectedRow(d.row, d.e);
-                }
-            });
-            grid.setOption({
-                numberFormat: function(v) {
-                    if (typeof(v) === "number") {
-                        return v.toLocaleString();
-                    }
-                    return v;
-                },
-                percentFormat: function(v) {
-                    if (typeof(v) === "number") {
-                        return PF(v);
-                    }
-                    return v;
-                }
-            });
-            grid.setData(window.gridData);
-            grid.render();
-        };
-        window.onresize = function() {
-            if (grid) {
-                grid.resize();
-            }
-        };
 
     </script>
 </body>
