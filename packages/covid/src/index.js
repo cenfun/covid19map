@@ -198,7 +198,7 @@ const getGridData = async () => {
         dataType: "number"
     }, {
         id: "econPercent",
-        name: "现存比",
+        name: "占比",
         align: "right",
         cellClass: "tg-border-right",
         headerItemClass: "tg-border-right",
