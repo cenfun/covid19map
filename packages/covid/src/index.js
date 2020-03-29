@@ -248,7 +248,7 @@ const getGridData = async () => {
 
     const gridData = {
         option: {
-            frozenColumn: 0,
+            frozenColumn: 1,
             collapseAll: null,
             sortOnInit: true,
             convertDataType: true,
