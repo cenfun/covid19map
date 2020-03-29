@@ -185,6 +185,7 @@ const getGridData = async () => {
         id: "tg_list_index",
         name: "",
         resizable: false,
+        sortable: false,
         align: "right",
         width: 35,
         formatter: function(v, row) {
@@ -196,7 +197,7 @@ const getGridData = async () => {
     }, {
         id: "name",
         name: "地区",
-        width: 120
+        width: 110
     }, {
         id: "conadd",
         name: "新增",
