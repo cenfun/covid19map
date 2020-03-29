@@ -182,6 +182,18 @@ const getGridData = async () => {
     var rows = [total];
 
     var columns = [{
+        id: "tg_list_index",
+        name: "",
+        resizable: false,
+        align: "right",
+        width: 35,
+        formatter: function(v, row) {
+            if (!row.tg_parent) {
+                return "";
+            }
+            return v + 1;
+        }
+    }, {
         id: "name",
         name: "地区",
         width: 120
