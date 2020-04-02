@@ -254,6 +254,8 @@ const getGridData = async () => {
             sortOnInit: true,
             convertDataType: true,
             sortAsc: false,
+            scrollbarSize: 10,
+            scrollbarFade: true,
             showRowNumber: false,
             rowNumberType: "list",
             sortField: ["econNum", "value"]
@@ -265,8 +267,27 @@ const getGridData = async () => {
     return gridData;
 };
 
-var TurboGrid = turbogrid.TurboGrid;
-var grid;
+const TurboGrid = turbogrid.TurboGrid;
+let grid;
+const updateScrollShadow = function() {
+    var view = grid.find(".tg-pane-top-left .tg-scrollview, .tg-pane-top-right .tg-scrollview");
+    view.removeClass("tg-scroll-shadow-top tg-scroll-shadow-bottom");
+    var scrollViewHeight = grid.getScrollViewHeight();
+    if (scrollViewHeight < 60) {
+        return;
+    }
+    var scrollTop = grid.getScrollTop();
+    var rowsHeight = grid.getRowsHeight();
+    var isTop = scrollTop < 30;
+    var isBottom = rowsHeight - scrollTop - scrollViewHeight < 30;
+    if (isTop) {
+        view.addClass("tg-scroll-shadow-bottom");
+    } else if (isBottom) {
+        view.addClass("tg-scroll-shadow-top");
+    } else {
+        view.addClass("tg-scroll-shadow-top tg-scroll-shadow-bottom");
+    }
+};
 const main = async () => {
 
     const title = "COVID-19 Map " + new Date().toLocaleDateString();
@@ -292,6 +313,9 @@ const main = async () => {
         if (this.isRowSelectable(rowData)) {
             this.setSelectedRow(d.row, d.e);
         }
+    });
+    grid.bind("onScroll onRenderComplete", function(e, d) {
+        updateScrollShadow();
     });
     grid.setOption({
         numberFormat: function(v) {
