@@ -244,6 +244,7 @@ const getGridData = async () => {
     }, {
         id: "value",
         name: "累计",
+        width: 80,
         dataType: "number"
     }];
 
@@ -305,6 +306,7 @@ const main = async () => {
         document.body.appendChild(div.firstChild);
     }
     var gridData = await getGridData();
+    var total = gridData.rows[0];
 
     grid = new TurboGrid(".grid");
     grid.bind("onClick", function(e, d) {
@@ -324,9 +326,21 @@ const main = async () => {
             }
             return v;
         },
-        percentFormat: function(v) {
+        percentFormat: function(v, row, column) {
             if (typeof(v) === "number") {
-                return PF(v);
+                var str = PF(v);
+                if (column.id === "deathPercent" && row.value > 1000) {
+                    if (v > total.deathPercent * 2) {
+                        str = '<span class="color-red">' + str + '<span>';
+                    } else if (v > total.deathPercent * 1.618) {
+                        str = '<span class="color-orange">' + str + '<span>';
+                    }
+                } else if (column.id === "curePercent" && row.value > 1000) {
+                    if (v > total.curePercent) {
+                        str = '<span class="color-green">' + str + '<span>';
+                    }
+                }
+                return str;
             }
             return v;
         }
