@@ -330,13 +330,17 @@ const main = async () => {
             if (typeof(v) === "number") {
                 var str = PF(v);
                 if (column.id === "deathPercent" && row.value > 1000) {
-                    if (v > total.deathPercent * 2) {
+                    if (v > total.deathPercent * 1.618) {
                         str = '<span class="color-red">' + str + '<span>';
-                    } else if (v > total.deathPercent * 1.618) {
+                    } else if (v > total.deathPercent) {
                         str = '<span class="color-orange">' + str + '<span>';
                     }
                 } else if (column.id === "curePercent" && row.value > 1000) {
-                    if (v > total.curePercent) {
+                    if (v < total.curePercent * 0.382) {
+                        str = '<span class="color-red">' + str + '<span>';
+                    } else if (v < total.curePercent) {
+                        str = '<span class="color-orange">' + str + '<span>';
+                    } else if (v > 0.618) {
                         str = '<span class="color-green">' + str + '<span>';
                     }
                 }
