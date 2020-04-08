@@ -208,6 +208,7 @@ const getGridData = async () => {
     }, {
         id: "econNum",
         name: "现存",
+        width: 80,
         dataType: "number"
     }, {
         id: "econPercent",
@@ -232,6 +233,7 @@ const getGridData = async () => {
     }, {
         id: "cureNum",
         name: "治愈",
+        width: 80,
         dataType: "number"
     }, {
         id: "curePercent",
