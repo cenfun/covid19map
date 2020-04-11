@@ -98,6 +98,7 @@ const getInfo = async () => {
         window.dataAPIData = function(d) {
             let data = d.data;
             resolve({
+                mtime: data.mtime,
                 chinaList: data.list,
                 worldList: data.worldlist
             });
@@ -251,6 +252,7 @@ const getGridData = async () => {
     }];
 
     const gridData = {
+        mtime: info.mtime,
         option: {
             frozenColumn: 1,
             collapseAll: null,
@@ -259,6 +261,7 @@ const getGridData = async () => {
             sortAsc: false,
             scrollbarSize: 10,
             scrollbarFade: true,
+            textSelectable: true,
             showRowNumber: false,
             rowNumberType: "list",
             sortField: ["econNum", "value"]
@@ -293,7 +296,10 @@ const updateScrollShadow = function() {
 };
 const main = async () => {
 
-    const title = "COVID-19 Map " + new Date().toLocaleDateString();
+    var gridData = await getGridData();
+
+    const time = gridData.mtime || new Date().toLocaleDateString();
+    const title = "COVID-19 Map (" + time + ")";
     document.title = title;
 
     let html = replace(template, {
@@ -307,7 +313,7 @@ const main = async () => {
     while (div.firstChild) {
         document.body.appendChild(div.firstChild);
     }
-    var gridData = await getGridData();
+
     var total = gridData.rows[0];
 
     grid = new TurboGrid(".grid");
