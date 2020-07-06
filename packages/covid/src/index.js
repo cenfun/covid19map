@@ -247,7 +247,7 @@ const getGridData = async () => {
     }, {
         id: "value",
         name: "累计",
-        width: 80,
+        width: 82,
         dataType: "number"
     }];
 
