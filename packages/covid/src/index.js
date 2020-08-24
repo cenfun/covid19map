@@ -4,7 +4,7 @@ const turbogrid = require("turbogrid");
 require("./main.scss");
 const template = require("./main.html");
 
-var PF = function(v, t = 1, digits = 2, unit = "%") {
+const PF = function(v, t = 1, digits = 2, unit = "%") {
     let p = 0;
     if (t) {
         p = v / t;
@@ -24,7 +24,7 @@ const num = function(str) {
     if (typeof(str) === "number" && !isNaN(str)) {
         return str;
     }
-    let n = parseFloat(str + "");
+    const n = parseFloat(`${str}`);
     if (isNaN(n)) {
         return 0;
     }
@@ -32,28 +32,28 @@ const num = function(str) {
 };
 
 const int = function(str) {
-    let n = num(str);
+    const n = num(str);
     return Math.round(n);
 };
 
 const getTimestamp = function(date = new Date(), option = {}) {
     option = Object.assign({
         weekday: "short",
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
         hour12: false,
-        timeZoneName: 'short'
+        timeZoneName: "short"
     }, option);
-    let timestamp = new Intl.DateTimeFormat('en-US', option).format(date);
+    const timestamp = new Intl.DateTimeFormat("en-US", option).format(date);
     return timestamp;
 };
 
 const replace = function(str, obj, defaultValue) {
-    str = str + "";
+    str = `${str}`;
     if (!obj) {
         return str;
     }
@@ -64,7 +64,7 @@ const replace = function(str, obj, defaultValue) {
             }
             return match;
         }
-        var val = obj[key];
+        let val = obj[key];
         if (typeof(val) === "function") {
             val = val(obj, key);
         }
@@ -93,18 +93,18 @@ const percentHandler = function(item) {
     }
 };
 
-const getInfo = async () => {
+const getInfo = () => {
     return new Promise((resolve) => {
         window.dataAPIData = function(d) {
-            let data = d.data;
+            const data = d.data;
             resolve({
                 mtime: data.mtime,
                 chinaList: data.list,
                 worldList: data.worldlist
             });
         };
-        let rd = Math.random().toString().substr(2);
-        const url = "https://gwpre.sina.cn/interface/fymap2020_data.json?_=" + rd + "&callback=dataAPIData";
+        const rd = Math.random().toString().substr(2);
+        const url = `https://gwpre.sina.cn/interface/fymap2020_data.json?_=${rd}&callback=dataAPIData`;
         const script = document.createElement("script");
         script.src = url;
         script.onload = function() {
@@ -120,9 +120,9 @@ const getInfo = async () => {
 
 const getGridData = async () => {
 
-    var info = await getInfo();
+    const info = await getInfo();
 
-    let china = {
+    const china = {
         conadd: 0,
         collapsed: true
     };
@@ -137,7 +137,7 @@ const getGridData = async () => {
                 }
             });
         }
-        let conadd = parseInt(p.conadd);
+        const conadd = parseInt(p.conadd);
         if (!isNaN(conadd)) {
             china.conadd += conadd;
         }
@@ -157,7 +157,7 @@ const getGridData = async () => {
         list.push(item);
     });
 
-    var total = {
+    const total = {
         name: "全球",
         conadd: 0,
         econNum: 0,
@@ -180,9 +180,9 @@ const getGridData = async () => {
 
     percentHandler(total);
 
-    var rows = [total];
+    const rows = [total];
 
-    var columns = [{
+    const columns = [{
         id: "tg_list_index",
         name: "",
         resizable: false,
@@ -276,16 +276,16 @@ const getGridData = async () => {
 const TurboGrid = turbogrid.TurboGrid;
 let grid;
 const updateScrollShadow = function() {
-    var view = grid.find(".tg-pane-top-left .tg-scrollview, .tg-pane-top-right .tg-scrollview");
+    const view = grid.find(".tg-pane-top-left .tg-scrollview, .tg-pane-top-right .tg-scrollview");
     view.removeClass("tg-scroll-shadow-top tg-scroll-shadow-bottom");
-    var scrollViewHeight = grid.getScrollViewHeight();
+    const scrollViewHeight = grid.getScrollViewHeight();
     if (scrollViewHeight < 60) {
         return;
     }
-    var scrollTop = grid.getScrollTop();
-    var rowsHeight = grid.getRowsHeight();
-    var isTop = scrollTop < 30;
-    var isBottom = rowsHeight - scrollTop - scrollViewHeight < 30;
+    const scrollTop = grid.getScrollTop();
+    const rowsHeight = grid.getRowsHeight();
+    const isTop = scrollTop < 30;
+    const isBottom = rowsHeight - scrollTop - scrollViewHeight < 30;
     if (isTop) {
         view.addClass("tg-scroll-shadow-bottom");
     } else if (isBottom) {
@@ -296,30 +296,30 @@ const updateScrollShadow = function() {
 };
 const main = async () => {
 
-    var gridData = await getGridData();
+    const gridData = await getGridData();
 
     const time = gridData.mtime || new Date().toLocaleDateString();
-    const title = "COVID-19 Map (" + time + ")";
+    const title = `COVID-19 Map (${time})`;
     document.title = title;
 
-    let html = replace(template, {
+    const html = replace(template, {
         title: title,
         timestamp: getTimestamp()
     });
 
-    var div = document.createElement("div");
+    const div = document.createElement("div");
     div.innerHTML = html;
 
     while (div.firstChild) {
         document.body.appendChild(div.firstChild);
     }
 
-    var total = gridData.rows[0];
+    const total = gridData.rows[0];
 
     grid = new TurboGrid(".grid");
     grid.bind("onClick", function(e, d) {
         this.unselectAll();
-        var rowData = this.getRowItem(d.row);
+        const rowData = this.getRowItem(d.row);
         if (this.isRowSelectable(rowData)) {
             this.setSelectedRow(d.row, d.e);
         }
@@ -327,30 +327,40 @@ const main = async () => {
     grid.bind("onScroll onRenderComplete", function(e, d) {
         updateScrollShadow();
     });
+
+    const percentHandler = function(str, v, column) {
+        if (column.id === "deathPercent") {
+            if (v > total.deathPercent * 1.618) {
+                str = `<span class="color-red">${str}<span>`;
+            } else if (v > total.deathPercent) {
+                str = `<span class="color-orange">${str}<span>`;
+            }
+        } else if (column.id === "curePercent") {
+            if (v < total.curePercent * 0.5) {
+                str = `<span class="color-red">${str}<span>`;
+            } else if (v < total.curePercent) {
+                str = `<span class="color-orange">${str}<span>`;
+            } else if (v > total.curePercent + (1 - total.curePercent) * 0.5) {
+                str = `<span class="color-green">${str}<span>`;
+            }
+        }
+        return str;
+    };
+
     grid.setOption({
         numberFormat: function(v) {
             if (typeof(v) === "number") {
-                return v.toLocaleString();
+                if (v > 10000) {
+                    return `${(v * 0.0001).toFixed(2)}万`;
+                }
             }
             return v;
         },
         percentFormat: function(v, row, column) {
             if (typeof(v) === "number") {
-                var str = PF(v);
-                if (column.id === "deathPercent" && row.value > 1000) {
-                    if (v > total.deathPercent * 1.618) {
-                        str = '<span class="color-red">' + str + '<span>';
-                    } else if (v > total.deathPercent) {
-                        str = '<span class="color-orange">' + str + '<span>';
-                    }
-                } else if (column.id === "curePercent" && row.value > 1000) {
-                    if (v < total.curePercent * 0.382) {
-                        str = '<span class="color-red">' + str + '<span>';
-                    } else if (v < total.curePercent) {
-                        str = '<span class="color-orange">' + str + '<span>';
-                    } else if (v > 0.618) {
-                        str = '<span class="color-green">' + str + '<span>';
-                    }
+                let str = PF(v);
+                if (row.value > 1000) {
+                    str = percentHandler(str, v, column);
                 }
                 return str;
             }
