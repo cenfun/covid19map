@@ -12,8 +12,8 @@
     },
     "homepage": "https://github.com/cenfun/covid19map#readme",
     "devDependencies": {
-        "@babel/polyfill": "^7.10.4",
-        "turbogrid": "^1.2.8"
+        "@babel/polyfill": "^7.11.5",
+        "turbogrid": "^1.2.9"
     },
     "dependencies": {},
     "internalDependencies": {}
