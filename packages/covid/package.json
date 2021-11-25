@@ -3,8 +3,8 @@
     "version": "",
     "main": "dist/covid.js",
     "devDependencies": {
-        "@babel/polyfill": "^7.8.7",
-        "turbogrid": "^1.1.2"
+        "@babel/polyfill": "^7.12.1",
+        "turbogrid": "^2.0.2"
     },
     "dependencies": {}
 }
