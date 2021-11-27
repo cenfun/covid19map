@@ -202,7 +202,7 @@ const getGridData = async () => {
     }, {
         id: 'conadd',
         name: '新增',
-        cellClass: 'tg-cell-mask tg-bg-gray',
+        columnClass: 'tg-cell-mask tg-bg-gray',
         headerItemClass: 'tg-bg-gray',
         headerClass: 'tg-bg-gray',
         dataType: 'number'
@@ -215,7 +215,7 @@ const getGridData = async () => {
         id: 'econPercent',
         name: '占比',
         align: 'right',
-        cellClass: 'tg-border-right',
+        columnClass: 'tg-border-right',
         headerItemClass: 'tg-border-right',
         headerClass: 'tg-border-right',
         dataType: 'percent'
@@ -227,7 +227,7 @@ const getGridData = async () => {
         id: 'deathPercent',
         name: '死亡率',
         align: 'right',
-        cellClass: 'tg-border-right',
+        columnClass: 'tg-border-right',
         headerItemClass: 'tg-border-right',
         headerClass: 'tg-border-right',
         dataType: 'percent'
@@ -240,7 +240,7 @@ const getGridData = async () => {
         id: 'curePercent',
         name: '治愈率',
         align: 'right',
-        cellClass: 'tg-border-right',
+        columnClass: 'tg-border-right',
         headerItemClass: 'tg-border-right',
         headerClass: 'tg-border-right',
         dataType: 'percent'

@@ -4,7 +4,7 @@
     "main": "dist/covid.js",
     "devDependencies": {
         "@babel/polyfill": "^7.12.1",
-        "turbogrid": "^2.0.2"
+        "turbogrid": "^2.0.3"
     },
     "dependencies": {}
 }

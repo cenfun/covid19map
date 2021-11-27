@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "hs b -m"
+        "start": "sf b -m"
     },
     "repository": {
         "type": "git",
@@ -12,9 +12,11 @@
     },
     "homepage": "https://github.com/cenfun/covid19map#readme",
     "devDependencies": {
+        "@babel/polyfill": "^7.12.1",
         "eslint": "^8.3.0",
         "eslint-plugin-html": "^6.2.0",
-        "turbogrid": "^2.0.2"
+        "turbogrid": "^2.0.3"
     },
-    "internalDependencies": {}
+    "internalDependencies": {},
+    "dependencies": {}
 }
